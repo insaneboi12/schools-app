@@ -62,7 +62,7 @@ export default function ShowSchools() {
     // let response = {ok: true, json: async () => ({schools: [{id: 1, name: 'School 1', address: 'Address 1', email: 'email@example.com', phone: '1234567890', image_base64: 'image.jpg', established: '2020', capacity: 100}]})};
       if (response.ok || true) {
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
         const schoolsData = data.schools || [];
         setSchools(schoolsData);
         setFilteredSchools(schoolsData);

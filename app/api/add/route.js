@@ -9,7 +9,7 @@ const db = await mysql.createConnection({
     password: process.env.DB_PASSWORD,
     database: "school_db",
     ssl: {
-        ca: fs.readFileSync(process.cwd() + '/ca.pem')  
+        ca: fs.readFileSync(process.cwd() + '/public/ca.pem')  
       }
 });
 // console.log("dirName", process.cwd());
