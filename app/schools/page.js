@@ -276,6 +276,8 @@ export default function ShowSchools() {
                   {school.image ? (
                     <div className="mb-4">
                       <Image
+                      width={100}
+                      height={100}
                         src={school.image}
                         alt={school.name}
                         className="w-full h-48 object-cover rounded-lg"

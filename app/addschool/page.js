@@ -49,13 +49,13 @@ const SchoolForm = () => {
     // Compress image before converting to base64
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    const img = new Image();
+    const imgElement = new window.Image();
 
-    img.onload = () => {
+    imgElement.onload = () => {
       // Calculate new dimensions (max 800x600 while maintaining aspect ratio)
       const maxWidth = 800;
       const maxHeight = 600;
-      let { width, height } = img;
+      let { width, height } = imgElement;
 
       if (width > height) {
         if (width > maxWidth) {
@@ -74,7 +74,7 @@ const SchoolForm = () => {
       canvas.height = height;
 
       // Draw and compress image
-      ctx.drawImage(img, 0, 0, width, height);
+      ctx.drawImage(imgElement, 0, 0, width, height);
 
       // Convert to base64 with compression (quality: 0.8 = 80%)
       const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
@@ -87,7 +87,7 @@ const SchoolForm = () => {
       setImageBase64(compressedBase64);
     };
 
-    img.src = URL.createObjectURL(file);
+    imgElement.src = URL.createObjectURL(file);
   };
 
   const handleSubmit = async (e) => {
@@ -222,6 +222,8 @@ const SchoolForm = () => {
               src={imageBase64}
               alt="Preview"
               className="mt-2 w-32 h-32 object-cover rounded-lg border"
+              width={100}
+              height={100}
             />
           )}
         </div>
