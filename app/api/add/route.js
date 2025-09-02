@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import mysql from "mysql2/promise";
-import fs from "fs";
+const cert =process.env.DB_SSL_CERT.replace(/\\n/g, "\n");
+// console.log("cert", cert);
 
 const db = await mysql.createConnection({
     host: process.env.DB_HOST,
@@ -9,7 +10,7 @@ const db = await mysql.createConnection({
     password: process.env.DB_PASSWORD,
     database: "school_db",
     ssl: {
-        ca: fs.readFileSync(process.cwd() + '/public/ca.pem')  
+        ca: cert 
       }
 });
 // console.log("dirName", process.cwd());
@@ -67,7 +68,7 @@ let values = [
 //     console.log(error);
 // }
 
-console.log('mysql connected');
+// console.log('mysql connected');
 
 export async function POST(request) {
     let data = await request.json();
