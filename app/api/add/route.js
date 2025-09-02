@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import mysql from "mysql2/promise";
-const cert =process.env.DB_SSL_CERT.replace(/\\n/g, "\n");
+// const cert =process.env.DB_SSL_CERT.replace(/\\n/g, "\n");
 // console.log("cert", cert);
 
 const db = await mysql.createConnection({
@@ -10,7 +10,7 @@ const db = await mysql.createConnection({
     password: process.env.DB_PASSWORD,
     database: "school_db",
     ssl: {
-        ca: cert 
+        ca: process.env.DB_SSL_CERT 
       }
 });
 // console.log("dirName", process.cwd());
