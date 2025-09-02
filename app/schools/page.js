@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function ShowSchools() {
   const [schools, setSchools] = useState([]);
@@ -233,7 +234,7 @@ export default function ShowSchools() {
                 <div className="text-gray-400 text-6xl mb-4">🔍</div>
                 <h3 className="text-xl font-semibold text-gray-600 mb-2">No Schools Found</h3>
                 <p className="text-gray-500 mb-6">
-                  No schools match your search for "<span className="font-semibold">{searchTerm}</span>"
+                  No schools match your search for &quot;<span className="font-semibold">{searchTerm}</span>&quot;
                 </p>
                 <button
                   onClick={clearSearch}
@@ -274,7 +275,7 @@ export default function ShowSchools() {
                   {/* School Image */}
                   {school.image ? (
                     <div className="mb-4">
-                      <img
+                      <Image
                         src={school.image}
                         alt={school.name}
                         className="w-full h-48 object-cover rounded-lg"
@@ -370,7 +371,7 @@ export default function ShowSchools() {
             {!hasMore && filteredSchools.length > 0 && (
               <div className="text-center py-8">
                 <p className="text-gray-500 text-sm">
-                  🎉 You've reached the end! Showing all {filteredSchools.length} school{filteredSchools.length !== 1 ? 's' : ''}.
+                  🎉 You&apos;ve reached the end! Showing all {filteredSchools.length} school{filteredSchools.length !== 1 ? 's' : ''}.
                 </p>
               </div>
             )}

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 const SchoolForm = () => {
   const [name, setName] = useState("");
@@ -81,7 +82,7 @@ const SchoolForm = () => {
       // Log compression info
       const originalSize = (file.size / 1024 / 1024).toFixed(2);
       const compressedSize = (compressedBase64.length * 0.75 / 1024 / 1024).toFixed(2); // Approximate size
-      console.log(`Image compressed: ${originalSize}MB → ${compressedSize}MB`);
+      // console.log(`Image compressed: ${originalSize}MB → ${compressedSize}MB`);
 
       setImageBase64(compressedBase64);
     };
@@ -217,7 +218,7 @@ const SchoolForm = () => {
           />
           {errors.image && <p className="text-red-500 text-sm">{errors.image}</p>}
           {imageBase64 && (
-            <img
+            <Image
               src={imageBase64}
               alt="Preview"
               className="mt-2 w-32 h-32 object-cover rounded-lg border"
