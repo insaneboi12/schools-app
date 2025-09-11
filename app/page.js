@@ -1,11 +1,28 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const router = useRouter();
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    let data = localStorage.getItem('userAuthMJ');
+    let userData = JSON.parse(data);
+    setUserData(userData);
+  }, []);
 
   const handleAddSchool = () => {
+    // console.log(userData.isAuth);
     router.push('/addschool');
+    // if(userData?.isAuth){
+    //   router.push('/addschool');
+    // }else{
+    //   let res = confirm('Login to add school');
+    //   if(res){
+    //     router.push('/auth');
+    //   }
+    // }
   };
 
   const handleShowSchools = () => {
@@ -14,7 +31,36 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="max-w-4xl mx-auto text-center">
+    {userData?.isAuth && (
+          <button
+            onClick={() => {
+              localStorage.removeItem('userAuthMJ');
+              setUserData(null);
+            }}
+            className="absolute top-10 right-10 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow transition-colors"
+          >
+            <div className="flex items-center space-x-2">
+              <svg 
+                className="w-5 h-5" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" 
+                />
+              </svg>
+              <span>Logout</span>
+            </div>
+          </button>
+        )}
+      <div className="max-w-4xl mx-auto text-center relative">
+        {/* Logout Button */}
+        
+
         {/* Header */}
         <div className="mb-12">
           <h1 className="text-5xl font-bold text-gray-800 mb-4">
@@ -84,6 +130,31 @@ export default function Home() {
             </button>
           </div>
         </div>
+
+        {/* Sign In/Sign Up Button */}
+        {!userData?.isAuth && <div className="mt-8 group">
+          <button
+            onClick={() => router.push('/auth')}
+            className="w-60 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 border-0"
+          >
+            <div className="flex items-center justify-center space-x-3">
+              <svg 
+                className="w-6 h-6 text-purple-100 group-hover:text-purple-50 transition-colors" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+              <span className="text-lg">Sign In / Sign Up</span>
+            </div>
+          </button>
+        </div>}
 
         {/* Additional Info */}
         <div className="mt-16 text-gray-500">

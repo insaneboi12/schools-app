@@ -12,11 +12,15 @@ export default function ShowSchools() {
   const [searchTerm, setSearchTerm] = useState("");
   const [visibleCount, setVisibleCount] = useState(3);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [userData, setUserData] = useState(null);
   const observerRef = useRef();
   const loadingRef = useRef();
 
   useEffect(() => {
     fetchSchools();
+    let data = localStorage.getItem('userAuthMJ');
+    let userData = JSON.parse(data);
+    setUserData(userData);
   }, []);
 
   useEffect(() => {
@@ -59,10 +63,10 @@ export default function ShowSchools() {
       setLoading(true);
       const response = await fetch('/api/add');
       
+      // console.log(data);
     // let response = {ok: true, json: async () => ({schools: [{id: 1, name: 'School 1', address: 'Address 1', email: 'email@example.com', phone: '1234567890', image_base64: 'image.jpg', established: '2020', capacity: 100}]})};
       if (response.ok || true) {
         const data = await response.json();
-        // console.log(data);
         const schoolsData = data.schools || [];
         setSchools(schoolsData);
         setFilteredSchools(schoolsData);
@@ -162,12 +166,43 @@ export default function ShowSchools() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-3xl font-bold text-gray-800">All Schools</h1>
-            <Link
+            <span className="flex items-center space-x-2">
+            
+        <Link
               href="/addschool"
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+              className="bg-blue-600 flex items-center text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Add New School
+             <svg className="w-5 h-5 text-white mr-4" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M352 128C352 110.3 337.7 96 320 96C302.3 96 288 110.3 288 128L288 288L128 288C110.3 288 96 302.3 96 320C96 337.7 110.3 352 128 352L288 352L288 512C288 529.7 302.3 544 320 544C337.7 544 352 529.7 352 512L352 352L512 352C529.7 352 544 337.7 544 320C544 302.3 529.7 288 512 288L352 288L352 128z"/></svg> Add New School
             </Link>
+
+            {userData?.isAuth && (
+          <button
+            onClick={() => {
+              localStorage.removeItem('userAuthMJ');
+              setUserData(null);
+            }}
+            className=" bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow transition-colors"
+          >
+            <div className="flex items-center space-x-2">
+              <svg 
+                className="w-5 h-5" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" 
+                />
+              </svg>
+              <span>Logout</span>
+            </div>
+          </button>
+        )}
+        </span>
+            
           </div>
           <Link
             href="/"
@@ -295,7 +330,7 @@ export default function ShowSchools() {
                       <h3 className="text-xl font-semibold text-gray-800 truncate flex-1">
                         {school.name}
                       </h3>
-                      <button
+                      {userData?.isAuth && <button
                         onClick={() => handleDeleteClick(school)}
                         className="ml-2 p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors duration-200 group"
                         title="Delete School"
@@ -303,7 +338,7 @@ export default function ShowSchools() {
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
-                      </button>
+                      </button>}
                     </div>
                     
                     <div className="text-sm text-gray-600 space-y-1">

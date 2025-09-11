@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const SchoolForm = () => {
   const [name, setName] = useState("");
@@ -12,9 +14,26 @@ const SchoolForm = () => {
   const [state, setState] = useState("");
   const [contact, setContact] = useState("");
   const [imageBase64, setImageBase64] = useState(null);
-
+  const [userData, setUserData] = useState(null);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  let hadRunRef = useRef(false);
+
+  useEffect(() => {
+    if(hadRunRef.current) return;
+    hadRunRef.current = true;
+    let data = localStorage.getItem('userAuthMJ');
+    let user = JSON.parse(data);
+    setUserData(user);
+    // console.log(userData.isAuth);
+    if(user?.isAuth){
+      // router.push('/addschool');
+    }else{
+      alert('Sign in/Sign up to add school');
+      router.push('/');
+    }
+  }, []);
 
   const validate = () => {
     const newErrors = {};
@@ -117,7 +136,7 @@ const SchoolForm = () => {
       // console.log(data);
       if(data.success){
         alert("School added successfully");
-        window.location.href = "/schools";
+        router.push("/schools");
       }else{
         alert(data.message);
       }
