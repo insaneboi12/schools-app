@@ -76,7 +76,7 @@ export default function Home() {
     {userData?.isAuth && (
           <button
             onClick={handleLogout}
-            className="absolute top-4 md:top-10 right-4 md:right-10 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-2 md:px-4 rounded-lg shadow transition-colors"
+            className="absolute z-[9999] top-4 md:top-10 right-4 md:right-10 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-2 md:px-4 rounded-lg shadow transition-colors"
           >
             <div className="flex items-center">
               <svg 
