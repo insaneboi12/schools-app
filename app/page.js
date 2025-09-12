@@ -37,11 +37,11 @@ export default function Home() {
               localStorage.removeItem('userAuthMJ');
               setUserData(null);
             }}
-            className="absolute top-4 md:top-10 right-4 md:right-10 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-3 md:px-4 rounded-lg shadow transition-colors text-sm md:text-base"
+            className="absolute top-4 md:top-10 right-4 md:right-10 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-2 md:px-4 rounded-lg shadow transition-colors"
           >
-            <div className="flex items-center space-x-1 md:space-x-2">
+            <div className="flex items-center">
               <svg 
-                className="w-4 h-4 md:w-5 md:h-5" 
+                className="w-5 h-5" 
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
@@ -53,7 +53,7 @@ export default function Home() {
                   d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" 
                 />
               </svg>
-              <span>Logout</span>
+              <span className="hidden md:inline ml-2">Logout</span>
             </div>
           </button>
         )}
