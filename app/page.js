@@ -37,11 +37,11 @@ export default function Home() {
               localStorage.removeItem('userAuthMJ');
               setUserData(null);
             }}
-            className="absolute top-10 right-10 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow transition-colors"
+            className="absolute top-4 md:top-10 right-4 md:right-10 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-3 md:px-4 rounded-lg shadow transition-colors text-sm md:text-base"
           >
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 md:space-x-2">
               <svg 
-                className="w-5 h-5" 
+                className="w-4 h-4 md:w-5 md:h-5" 
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"

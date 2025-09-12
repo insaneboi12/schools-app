@@ -5,6 +5,7 @@ import nodemailer from "nodemailer";
 // Create a single database connection function
 async function createDBConnection() {
     try {
+
         const connection = await mysql.createConnection({
             host: process.env.DB_HOST,
             user: process.env.DB_USER,
@@ -157,8 +158,8 @@ export async function GET() {
     try {
         db = await createDBConnection();
         let data = await db.execute(
-            "SELECT * FROM user_otps WHERE email = ? AND otp = ? AND expiry_time > NOW() AND is_used = 0",
-            ["meghshamjade50@gmail.com", '973558'])
+            "SELECT * FROM users"
+        )
         console.log(data[0].length);
         console.log(data);
         return NextResponse.json({success: true, message: "root" });
