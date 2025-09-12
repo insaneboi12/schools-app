@@ -17,6 +17,7 @@ const SchoolForm = () => {
   const [userData, setUserData] = useState(null);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   let hadRunRef = useRef(false);
 
@@ -24,15 +25,31 @@ const SchoolForm = () => {
     if(hadRunRef.current) return;
     hadRunRef.current = true;
     let data = localStorage.getItem('userAuthMJ');
-    let user = JSON.parse(data);
-    setUserData(user);
-    // console.log(userData.isAuth);
-    if(user?.isAuth){
-      // router.push('/addschool');
-    }else{
+    let userData =data? JSON.parse(data):null;
+    if(!userData||!userData.isAuth){
       alert('Sign in/Sign up to add school');
       router.push('/');
+      return;
     }
+    let finalData = userData;
+    fetch(`/api/auth?email=${userData.email}`, {
+      method: 'GET',
+    }).then(res => res.json()).then(data => {
+      if(data.success){
+        let user = data.user;
+        if(user.isAuth!==userData.isAuth||user.userName!==userData.userName||user.email!==userData.email){
+          finalData = user;
+          localStorage.setItem('userAuthMJ', JSON.stringify(finalData));
+        }
+      }else{
+        localStorage.removeItem('userAuthMJ');
+        finalData = null;
+        alert('Sign in/Sign up to add school');
+        router.push('/');
+      }
+      setUserData(finalData);
+      setIsLoading(false);
+    });
   }, []);
 
   const validate = () => {
@@ -148,6 +165,7 @@ const SchoolForm = () => {
   };
 
   return (
+    isLoading?<span className="flex w-[100vw] bg-white h-[99vh] items-center justify-center"> <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div></span>:
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
       <form
         onSubmit={handleSubmit}

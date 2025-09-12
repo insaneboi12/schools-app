@@ -5,11 +5,33 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const router = useRouter();
   const [userData, setUserData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let data = localStorage.getItem('userAuthMJ');
-    let userData = JSON.parse(data);
-    setUserData(userData);
+    let userData =data? JSON.parse(data):null;
+    if(!userData){
+      setIsLoading(false);
+      return;
+    };
+    let finalData = userData;
+    fetch(`/api/auth?email=${userData.email}`, {
+      method: 'GET',
+    }).then(res => res.json()).then(data => {
+      if(data.success){
+        let user = data.user;
+        if(user.isAuth!==userData.isAuth||user.userName!==userData.userName||user.email!==userData.email){
+          finalData = user;
+          localStorage.setItem('userAuthMJ', JSON.stringify(finalData));
+        }
+      }else{
+        localStorage.removeItem('userAuthMJ');
+        finalData = null;
+      }
+      setUserData(finalData);
+      setIsLoading(false);
+    });
+    // setUserData(userData);
   }, []);
 
   const handleAddSchool = () => {
@@ -29,14 +51,31 @@ export default function Home() {
     router.push('/schools');
   };
 
+  const handleLogout = () => {
+    setIsLoading(true);
+    fetch('/api/auth', {
+      method: 'POST',
+      body: JSON.stringify({ email: userData.email, type: 'logout' }),
+    }).then(res => res.json()).then(data => {
+      if(data.success){
+        localStorage.removeItem('userAuthMJ');
+        setUserData(null);
+        alert('Logged out successfully');
+        // router.push('/');
+      }else{
+        alert('Failed to logout');
+      }
+      setIsLoading(false);
+    });
+  };
+
   return (
+    isLoading?<span className="flex w-[100vw] h-[99vh] items-center justify-center"> <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div></span>
+    :
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
     {userData?.isAuth && (
           <button
-            onClick={() => {
-              localStorage.removeItem('userAuthMJ');
-              setUserData(null);
-            }}
+            onClick={handleLogout}
             className="absolute top-4 md:top-10 right-4 md:right-10 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-2 md:px-4 rounded-lg shadow transition-colors"
           >
             <div className="flex items-center">

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-
+import { useRouter } from "next/navigation";
 export default function ShowSchools() {
   const [schools, setSchools] = useState([]);
   const [filteredSchools, setFilteredSchools] = useState([]);
@@ -15,12 +15,32 @@ export default function ShowSchools() {
   const [userData, setUserData] = useState(null);
   const observerRef = useRef();
   const loadingRef = useRef();
-
+  const router = useRouter();
   useEffect(() => {
     fetchSchools();
     let data = localStorage.getItem('userAuthMJ');
-    let userData = JSON.parse(data);
-    setUserData(userData);
+    let userData =data? JSON.parse(data):null;
+    if(!userData){
+      setLoading(false);
+      return;
+    };
+    let finalData = userData;
+    fetch(`/api/auth?email=${userData.email}`, {
+      method: 'GET',
+    }).then(res => res.json()).then(data => {
+      if(data.success){
+        let user = data.user;
+        if(user.isAuth!==userData.isAuth||user.userName!==userData.userName||user.email!==userData.email){
+          finalData = user;
+          localStorage.setItem('userAuthMJ', JSON.stringify(finalData));
+        }
+      }else{
+        localStorage.removeItem('userAuthMJ');
+        finalData = null;
+      }
+      setUserData(finalData);
+      setLoading(false);
+    });
   }, []);
 
   useEffect(() => {
@@ -126,6 +146,24 @@ export default function ShowSchools() {
     }
   };
 
+  const handleLogout = () => {
+    setLoading(true);
+    fetch('/api/auth', {
+      method: 'POST',
+      body: JSON.stringify({ email: userData.email, type: 'logout' }),
+      }).then(res => res.json()).then(data => {
+      if(data.success){
+        localStorage.removeItem('userAuthMJ');
+        setUserData(null);
+        alert('Logged out successfully');
+        router.push('/schools');
+      }else{
+        alert('Failed to logout');
+      }
+      setLoading(false);
+    });
+  };
+
   // Get visible schools for display
   const visibleSchools = filteredSchools.slice(0, visibleCount).reverse();
   const hasMore = visibleCount < filteredSchools.length;
@@ -177,10 +215,7 @@ export default function ShowSchools() {
 
             {userData?.isAuth && (
           <button
-            onClick={() => {
-              localStorage.removeItem('userAuthMJ');
-              setUserData(null);
-            }}
+            onClick={handleLogout}
             className="w-auto md:w-auto bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow transition-colors"
           >
             <div className="flex items-center justify-center space-x-2">
