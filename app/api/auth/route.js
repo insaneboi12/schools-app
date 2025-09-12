@@ -2,9 +2,15 @@ import { NextResponse } from "next/server";
 import mysql from "mysql2/promise";
 import nodemailer from "nodemailer";
 import bcrypt from "bcrypt";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 // Create a single database connection function
 async function createDBConnection() {
+
 
     try {
 
@@ -86,7 +92,7 @@ export async function POST(request) {
             await transporter.sendMail({
                 from: process.env.GMAIL_USER,
                 to: data.email,
-                subject: 'Welcome to SchoolList - Your Authentication Code is - '+otp+' expires by '+expiryTime.getHours()+':'+expiryTime.getMinutes(),
+                subject: 'Welcome to SchoolList - Your Authentication Code is - '+otp+' expires by '+dayjs(expiryTime).tz("Asia/Kolkata").format("HH:mm"),
                 html: emailHtml
             });
             

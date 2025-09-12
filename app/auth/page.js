@@ -7,17 +7,31 @@ export default function Auth() {
     const [userName, setUserName] = useState("");
     const [email, setEmail] = useState("");
     const [otp, setOtp] = useState("");
+    const [otpError, setOtpError] = useState("");
+    const [emailError, setEmailError] = useState("");
     const [showOtpField, setShowOtpField] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [countdown, setCountdown] = useState(60);
     const router = useRouter();
 
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
     const handleGetOtp = async () => {
         if (!userName.trim() || !email.trim()) {
             alert("Please fill in all fields");
             return;
         }
+
+        if (!validateEmail(email)) {
+            setEmailError("Please enter a valid email address");
+            return;
+        }
+
+        setEmailError("");
 
         try {
             setIsLoading(true);
@@ -45,9 +59,16 @@ export default function Auth() {
 
     const handleVerifyOtp = async () => {
         if (!otp.trim()) {
-            alert("Please enter OTP");
+            setOtpError("Please enter OTP");
             return;
         }
+        
+        if (otp.length !== 6) {
+            setOtpError("OTP must be exactly 6 digits");
+            return;
+        }
+        
+        setOtpError("");
 
         setIsSubmitting(true);
         try {
@@ -58,6 +79,7 @@ export default function Auth() {
             const data = await response.json();
             if(data.success){
                 alert("OTP verified successfully");
+                router.push('/');
             } else {
                 alert(data.message);
             }
@@ -67,7 +89,7 @@ export default function Auth() {
                 userName,
                 email
             }));
-            router.push('/');
+            
         } catch (error) {
             console.error(error);
             alert("Verification failed");
@@ -105,10 +127,21 @@ export default function Auth() {
                         <input
                             type="email"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="mt-1 text-black block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                            onChange={(e) => {
+                                setEmail(e.target.value);
+                                // Clear error when user starts typing
+                                if (emailError) {
+                                    setEmailError("");
+                                }
+                            }}
+                            className={`mt-1 text-black block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${
+                                emailError ? 'border-red-500' : 'border-gray-300'
+                            }`}
                             placeholder="Enter your email"
                         />
+                        {emailError && (
+                            <p className="text-red-500 text-sm mt-1">{emailError}</p>
+                        )}
                     </div>
 
                     {!showOtpField ? (
@@ -128,10 +161,20 @@ export default function Auth() {
                                     onChange={(e) => {
                                         const value = e.target.value.replace(/[^0-9]/g, '');
                                         setOtp(value);
+                                        // Clear error when user starts typing
+                                        if (otpError) {
+                                            setOtpError("");
+                                        }
                                     }}
-                                    className="mt-1 text-black block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                                    placeholder="Enter OTP"
+                                    className={`mt-1 text-black block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${
+                                        otpError ? 'border-red-500' : 'border-gray-300'
+                                    }`}
+                                    placeholder="Enter 6-digit OTP"
+                                    maxLength={6}
                                 />
+                                {otpError && (
+                                    <p className="text-red-500 text-sm mt-1">{otpError}</p>
+                                )}
                                 <p className="text-sm text-gray-500 mt-1">
                                     {countdown > 0 ? `Resend OTP in ${Math.floor(countdown / 60)}:${(countdown % 60).toString().padStart(2, '0')}` :
                                         <button

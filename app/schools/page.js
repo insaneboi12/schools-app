@@ -39,7 +39,7 @@ export default function ShowSchools() {
         finalData = null;
       }
       setUserData(finalData);
-      setLoading(false);
+      // setLoading(false);
     });
   }, []);
 
