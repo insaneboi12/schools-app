@@ -13,6 +13,7 @@ export default function ShowSchools() {
   const [visibleCount, setVisibleCount] = useState(3);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [deletingSchoolId, setDeletingSchoolId] = useState(null);
   const observerRef = useRef();
   const loadingRef = useRef();
   const router = useRouter();
@@ -21,7 +22,7 @@ export default function ShowSchools() {
     let data = localStorage.getItem('userAuthMJ');
     let userData =data? JSON.parse(data):null;
     if(!userData){
-      setLoading(false);
+      // setLoading(false);
       return;
     };
     let finalData = userData;
@@ -50,7 +51,8 @@ export default function ShowSchools() {
     } else {
       const filtered = schools.filter(school => 
         school.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        school.address?.toLowerCase().includes(searchTerm.toLowerCase())
+        school.address?.toLowerCase().includes(searchTerm.toLowerCase())||
+        school.city?.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredSchools(filtered);
     }
@@ -90,11 +92,7 @@ export default function ShowSchools() {
         const schoolsData = data.schools || [];
         setSchools(schoolsData);
         setFilteredSchools(schoolsData);
-      } else {
-        setError('Failed to fetch schools');
-        setSchools([]);
-        setFilteredSchools([]);
-      }
+      } 
     } catch (err) {
       setError('Error connecting to server');
     } finally {
@@ -112,6 +110,7 @@ export default function ShowSchools() {
 
   const deleteSchool = async (schoolId, schoolName) => {
     try {
+      setDeletingSchoolId(schoolId);
       const res = await fetch(`/api/add`, {
         method: 'DELETE',
         body: JSON.stringify({id: schoolId}),
@@ -137,6 +136,8 @@ export default function ShowSchools() {
     } catch (error) {
       console.error('Error deleting school:', error);
       alert('An error occurred while deleting the school. Please try again.');
+    } finally {
+      setDeletingSchoolId(null);
     }
   };
 
@@ -366,13 +367,18 @@ export default function ShowSchools() {
                         {school.name}
                       </h3>
                       {userData?.isAuth && <button
-                        onClick={() => handleDeleteClick(school)}
-                        className="ml-2 p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors duration-200 group"
-                        title="Delete School"
+                        onClick={(eve) => handleDeleteClick(school,eve)}
+                        disabled={deletingSchoolId === school.id}
+                        className="ml-2 p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors duration-200 group disabled:opacity-50 disabled:cursor-not-allowed"
+                        title={deletingSchoolId === school.id ? "Deleting..." : "Delete School"}
                       >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
+                        {deletingSchoolId === school.id ? (
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-red-500"></div>
+                        ) : (
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        )}
                       </button>}
                     </div>
                     
