@@ -90,7 +90,7 @@ export default function ShowSchools() {
       if (response.ok || true) {
         const data = await response.json();
         const schoolsData = data.schools || [];
-        setSchools(schoolsData);
+        setSchools(schoolsData.reverse());
         setFilteredSchools(schoolsData);
       } 
     } catch (err) {
@@ -166,7 +166,7 @@ export default function ShowSchools() {
   };
 
   // Get visible schools for display
-  const visibleSchools = filteredSchools.slice(0, visibleCount).reverse();
+  const visibleSchools = filteredSchools.slice(0, visibleCount);
   const hasMore = visibleCount < filteredSchools.length;
 
   if (loading) {
