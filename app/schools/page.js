@@ -14,8 +14,6 @@ export default function ShowSchools() {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [userData, setUserData] = useState(null);
   const [deletingSchoolId, setDeletingSchoolId] = useState(null);
-  const observerRef = useRef();
-  const loadingRef = useRef();
   const router = useRouter();
   useEffect(() => {
     fetchSchools();
@@ -60,14 +58,18 @@ export default function ShowSchools() {
     setVisibleCount(3);
   }, [searchTerm, schools]);
 
-  // Intersection Observer for infinite scroll
-  const lastElementRef = useCallback(node => {
-    if (loading) return;
+  // Scroll event handler for infinite scroll
+  const handleScroll = useCallback((e) => {
+    if (loading || isLoadingMore) return;
     
-    if (observerRef.current) observerRef.current.disconnect();
+    const container = e.target;
+    const scrollTop = container.scrollTop;
+    const scrollHeight = container.scrollHeight;
+    const clientHeight = container.clientHeight;
     
-    observerRef.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && visibleCount < filteredSchools.length) {
+    // Load more when user is near the bottom (within 100px)
+    if (scrollTop + clientHeight >= scrollHeight - 100) {
+      if (visibleCount < filteredSchools.length) {
         setIsLoadingMore(true);
         // Simulate loading delay for better UX
         setTimeout(() => {
@@ -75,10 +77,8 @@ export default function ShowSchools() {
           setIsLoadingMore(false);
         }, 500);
       }
-    });
-    
-    if (node) observerRef.current.observe(node);
-  }, [loading, visibleCount, filteredSchools.length]);
+    }
+  }, [loading, isLoadingMore, visibleCount, filteredSchools.length]);
 
   const fetchSchools = async () => {
     try {
@@ -199,7 +199,10 @@ export default function ShowSchools() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div 
+      className="h-screen bg-gray-50 py-8 px-4 overflow-y-auto"
+      onScroll={handleScroll}
+    >
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -341,7 +344,6 @@ export default function ShowSchools() {
                 <div
                   key={school.id}
                   className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6"
-                  ref={index === visibleSchools.length - 1 ? lastElementRef : null}
                 >
                   {/* School Image */}
                   {school.image ? (
